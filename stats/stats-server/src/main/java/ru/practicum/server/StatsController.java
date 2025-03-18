@@ -1,7 +1,9 @@
 package ru.practicum.server;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +15,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class StatsController {
-    private final String hitPath = "/hit";
-    private final String statsPath = "/stats";
+    final String hitPath = "/hit";
+    final String statsPath = "/stats";
 
-    private final StatsService statsService;
+    final StatsService statsService;
 
     @PostMapping(hitPath)
     public ResponseEntity<Void> saveHit(@Valid @RequestBody EndpointHitDto endpointHitDto) {
