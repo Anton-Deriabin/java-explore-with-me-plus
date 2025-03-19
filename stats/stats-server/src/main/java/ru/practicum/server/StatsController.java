@@ -15,12 +15,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class StatsController {
-    String hitPath = "/hit";
-    String statsPath = "/stats";
+    final String hitPath = "/hit";
+    final String statsPath = "/stats";
 
-    StatsService statsService;
+    final StatsService statsService;
 
     @PostMapping(hitPath)
     public ResponseEntity<Void> saveHit(@Valid @RequestBody EndpointHitDto endpointHitDto) {

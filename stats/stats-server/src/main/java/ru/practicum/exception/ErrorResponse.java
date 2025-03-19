@@ -7,8 +7,8 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ErrorResponse {
-    String error;
-    String message;
+    final String error;
+    final String message;
 }
