@@ -1,5 +1,7 @@
 package ru.practicum;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -14,12 +16,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Client {
-    ;
+    RestClient restClient;
 
-    private final RestClient restClient;
-
-    private final String url;
+    String url;
 
     public Client(@Value("${my.url}") String url) {
         this.restClient = RestClient.create();
