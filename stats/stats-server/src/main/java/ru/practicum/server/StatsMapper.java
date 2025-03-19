@@ -3,6 +3,7 @@ package ru.practicum.server;
 import lombok.NoArgsConstructor;
 import ru.practicum.EndpointHitDto;
 
+
 @NoArgsConstructor
 public class StatsMapper {
     public static EndpointHit mapToEndpointHit(EndpointHitDto endpointHitDto) {
