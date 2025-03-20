@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.user.dto.UserDto;
 
 import java.util.List;
 

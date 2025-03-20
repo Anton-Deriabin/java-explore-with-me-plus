@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.event.dto.EventDto;
 
 import java.util.List;
 
@@ -22,12 +23,12 @@ public class EventAdminController {
     EventAdminService eventAdminService;
 
     @GetMapping
-    public List<EventDto> getEvents(@RequestParam List <Long> users, @RequestParam List <String> states,
-                                    @RequestParam List <Long> categories, @RequestParam String rangeStart,
+    public List<EventDto> getEvents(@RequestParam List<Long> users, @RequestParam List<String> states,
+                                    @RequestParam List<Long> categories, @RequestParam String rangeStart,
                                     @RequestParam String rangeEnd, @PositiveOrZero @RequestParam Integer from,
                                     @Positive @RequestParam Integer size) {
 
-        return eventAdminService.getEvents(users,states,categories,rangeStart,rangeEnd,from,size);
+        return eventAdminService.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);
 
 
     }

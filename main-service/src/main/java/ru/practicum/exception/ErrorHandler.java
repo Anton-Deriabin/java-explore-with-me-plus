@@ -2,6 +2,7 @@ package ru.practicum.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,8 +38,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidation(final MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> handleValidation(final MethodArgumentNotValidException e) {
         List<String> errorMessages = e.getBindingResult().getAllErrors().stream()
                 .map(error -> {
                     String fieldName = ((FieldError) error).getField();
@@ -47,11 +47,22 @@ public class ErrorHandler {
                     return "Field: " + fieldName + ". Error: " + errorMessage + ". Value: " + rejectedValue;
                 })
                 .toList();
-        return new ErrorResponse(
+        String firstErrorMessage = errorMessages.get(0);
+        if (firstErrorMessage.contains("eventDate") &&
+                firstErrorMessage.contains("Event date must be at least two hours in the future")) {
+            ErrorResponse response = new ErrorResponse(
+                    "CONFLICT",
+                    "Conflict with event date",
+                    firstErrorMessage
+            );
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+        ErrorResponse response = new ErrorResponse(
                 "BAD_REQUEST",
                 "Incorrectly made request.",
-                errorMessages.get(0)
+                firstErrorMessage
         );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
 }
