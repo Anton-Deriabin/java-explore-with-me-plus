@@ -22,13 +22,7 @@ public class ErrorHandler {
     @ExceptionHandler(NameExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleNameExist(final NameExistException e) {
-        return new ErrorResponse("CONFLICT", "Name already exists", e.getMessage());
-    }
-
-    @ExceptionHandler(CategoryNotEmptyException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleCategoryNotEmpty(final CategoryNotEmptyException e) {
-        return new ErrorResponse("CONFLICT", "Category is not empty", e.getMessage());
+        return new ErrorResponse("CONFLICT", e.getReason(), e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -15,7 +15,7 @@ import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.exception.NameExistException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.utils.LoggingUtils;
+import static ru.practicum.utils.LoggingUtils.logAndReturn;
 
 import java.util.List;
 
@@ -33,10 +33,10 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Creating category with name: {}", newCategoryDto.getName());
         if (categoryRepository.existsByName(newCategoryDto.getName())) {
             log.warn("Category creation failed - name {} already exists", newCategoryDto.getName());
-            throw new NameExistException(String.format("Can't create category because name: %s already used by another category", newCategoryDto.getName()));
+            throw new NameExistException(String.format("Name: %s already used by another category", newCategoryDto.getName()), "The required object already used");
         }
         Category category = CategoryMapper.toCategory(newCategoryDto);
-        return LoggingUtils.logAndReturn(
+        return logAndReturn(
                 CategoryMapper.toCategoryDto(categoryRepository.save(category)),
                 savedCategory -> log.info("Category created successfully: {}", savedCategory)
         );
@@ -47,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDto> getCategories(int from, int size) {
         log.info("Fetching categories with from={} and size={}", from, size);
         Pageable page = PageRequest.of(from / size, size);
-        return LoggingUtils.logAndReturn(
+        return logAndReturn(
                 categoryRepository.findAll(page)
                         .stream()
                         .map(CategoryMapper::toCategoryDto)
@@ -66,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
                     return new NotFoundException(String.format("Category with id=%d was not found", catId),
                             "The required object was not found.");
                 });
-        return LoggingUtils.logAndReturn(
+        return logAndReturn(
                 CategoryMapper.toCategoryDto(category),
                 foundCategory -> log.info("Category found: {}", foundCategory)
         );
@@ -83,10 +83,10 @@ public class CategoryServiceImpl implements CategoryService {
                 });
         if (categoryRepository.existsByName(categoryDto.getName())) {
             log.warn("Category update failed - name {} already exists", categoryDto.getName());
-            throw new NameExistException(String.format("Can't update category because name: %s already used by another category", categoryDto.getName()));
+            throw new NameExistException(String.format("Name: %s already used by another category", categoryDto.getName()), "The required object already used");
         }
         category.setName(categoryDto.getName());
-        return LoggingUtils.logAndReturn(
+        return logAndReturn(
                 CategoryMapper.toCategoryDto(categoryRepository.save(category)),
                 updatedCategory -> log.info("Category updated successfully: {}", updatedCategory)
         );
