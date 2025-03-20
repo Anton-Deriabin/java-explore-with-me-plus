@@ -1,24 +1,26 @@
-package ru.practicum.ewm.category.controller;
+package ru.practicum.category.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
+import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.category.dto.NewCategoryDto;
+import ru.practicum.category.service.CategoryService;
 
 @Validated
 @RestController
 @AllArgsConstructor
-@RequestMapping("/admin/categories")
+@RequestMapping(path = "/admin/categories")
 public class CategoryAdminController {
     private final CategoryService categoryService;
 
-    @ResponseStatus(CREATED)
+
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto saveCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
-        return categoryService.saveCategory(newCategoryDto);
+        return categoryService.createCategory(newCategoryDto);
     }
 
     @PatchMapping("/{catId}")
@@ -27,9 +29,9 @@ public class CategoryAdminController {
         return categoryService.updateCategory(catId, categoryDto);
     }
 
-    @ResponseStatus(NO_CONTENT)
-    @DeleteMapping("/{catId}")
-    public void deleteCategory(@PathVariable Long catId) {
-        categoryService.deleteCategory(catId);
-    }
+//    @ResponseStatus(NO_CONTENT)
+//    @DeleteMapping("/{catId}")
+//    public void deleteCategory(@PathVariable Long catId) {
+//        categoryService.deleteCategory(catId);
+//    }
 }

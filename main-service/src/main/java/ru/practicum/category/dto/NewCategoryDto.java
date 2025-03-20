@@ -1,4 +1,4 @@
-package ru.practicum.ewm.category.dto;
+package ru.practicum.category.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -8,8 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDto {
-    private Long id;
+public class NewCategoryDto {
     @NotBlank
     private String name;
 }

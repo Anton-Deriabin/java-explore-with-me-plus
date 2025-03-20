@@ -1,4 +1,4 @@
-package ru.practicum.ewm.category.exception;
+package ru.practicum.exception;
 
 public class CategoryNotEmptyException extends RuntimeException {
     public CategoryNotEmptyException(String message) {
