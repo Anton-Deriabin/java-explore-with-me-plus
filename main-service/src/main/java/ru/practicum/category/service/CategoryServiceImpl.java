@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
@@ -14,6 +15,7 @@ import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.exception.NameExistException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.utils.LoggingUtils;
 
 import java.util.List;
 
@@ -21,10 +23,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Transactional
 public class CategoryServiceImpl implements CategoryService {
 
     CategoryRepository categoryRepository;
-//    EventRepository eventRepository;
 
     @Override
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
@@ -34,24 +36,28 @@ public class CategoryServiceImpl implements CategoryService {
             throw new NameExistException(String.format("Can't create category because name: %s already used by another category", newCategoryDto.getName()));
         }
         Category category = CategoryMapper.toCategory(newCategoryDto);
-        CategoryDto savedCategory = CategoryMapper.toCategoryDto(categoryRepository.save(category));
-        log.info("Category created successfully: {}", savedCategory);
-        return savedCategory;
+        return LoggingUtils.logAndReturn(
+                CategoryMapper.toCategoryDto(categoryRepository.save(category)),
+                savedCategory -> log.info("Category created successfully: {}", savedCategory)
+        );
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CategoryDto> getCategories(int from, int size) {
         log.info("Fetching categories with from={} and size={}", from, size);
         Pageable page = PageRequest.of(from / size, size);
-        List<CategoryDto> categories = categoryRepository.findAll(page)
-                .stream()
-                .map(CategoryMapper::toCategoryDto)
-                .toList();
-        log.info("Fetched {} categories", categories.size());
-        return categories;
+        return LoggingUtils.logAndReturn(
+                categoryRepository.findAll(page)
+                        .stream()
+                        .map(CategoryMapper::toCategoryDto)
+                        .toList(),
+                categories -> log.info("Fetched {} categories", categories.size())
+        );
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryDto getCategory(Long catId) {
         log.info("Fetching category with id={}", catId);
         Category category = categoryRepository.findById(catId)
@@ -60,8 +66,10 @@ public class CategoryServiceImpl implements CategoryService {
                     return new NotFoundException(String.format("Category with id=%d was not found", catId),
                             "The required object was not found.");
                 });
-        log.info("Category found: {}", category);
-        return CategoryMapper.toCategoryDto(category);
+        return LoggingUtils.logAndReturn(
+                CategoryMapper.toCategoryDto(category),
+                foundCategory -> log.info("Category found: {}", foundCategory)
+        );
     }
 
     @Override
@@ -78,12 +86,14 @@ public class CategoryServiceImpl implements CategoryService {
             throw new NameExistException(String.format("Can't update category because name: %s already used by another category", categoryDto.getName()));
         }
         category.setName(categoryDto.getName());
-        CategoryDto updatedCategory = CategoryMapper.toCategoryDto(categoryRepository.save(category));
-        log.info("Category updated successfully: {}", updatedCategory);
-        return updatedCategory;
+        return LoggingUtils.logAndReturn(
+                CategoryMapper.toCategoryDto(categoryRepository.save(category)),
+                updatedCategory -> log.info("Category updated successfully: {}", updatedCategory)
+        );
     }
 
 //    @Override
+//    @Transactional
 //    public void deleteCategory(Long catId) {
 //        if (eventRepository.existsByCategoryId(catId)) {
 //            throw new CategoryNotEmptyException("The category is not empty");
