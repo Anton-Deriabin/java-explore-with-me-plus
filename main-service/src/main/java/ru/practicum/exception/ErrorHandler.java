@@ -19,6 +19,12 @@ public class ErrorHandler {
         return new ErrorResponse("NOT_FOUND", e.getReason(), e.getMessage());
     }
 
+    @ExceptionHandler(NameExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleNameExist(final NameExistException e) {
+        return new ErrorResponse("CONFLICT", e.getReason(), e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidation(final MethodArgumentNotValidException e) {
