@@ -21,7 +21,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleNotFound(final MethodArgumentNotValidException e) {
+    public ErrorResponse handleValidation(final MethodArgumentNotValidException e) {
         List<String> errorMessages = e.getBindingResult().getAllErrors().stream()
                 .map(error -> {
                     String fieldName = ((FieldError) error).getField();

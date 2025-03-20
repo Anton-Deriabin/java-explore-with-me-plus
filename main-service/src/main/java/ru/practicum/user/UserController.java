@@ -14,11 +14,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping(path = "/admin/users")
 public class UserController {
 
-    final UserService userService;
+    UserService userService;
 
 
     @PostMapping

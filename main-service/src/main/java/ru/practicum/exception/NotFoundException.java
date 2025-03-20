@@ -1,8 +1,13 @@
 package ru.practicum.exception;
 
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NotFoundException extends RuntimeException {
 
-    private String reason;
+    String reason;
 
     public NotFoundException(String message,String reason) {
         super(message);
