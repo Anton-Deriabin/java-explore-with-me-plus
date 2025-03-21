@@ -1,6 +1,7 @@
 package ru.practicum.event;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.model.Category;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "events", schema = "public")
+@EqualsAndHashCode(of = "id")
 @Getter
 @Setter
 @ToString
@@ -23,12 +25,15 @@ public class Event {
     Long id;
 
     @Column(nullable = false, length = 120)
+    @Size(min = 3, max = 120)
     String title;
 
     @Column(nullable = false, length = 2000)
+    @Size(min = 20, max = 2000)
     String annotation;
 
     @Column(nullable = false, length = 7000)
+    @Size(min = 20, max = 7000)
     String description;
 
     @Column(name = "event_date", nullable = false)
@@ -43,8 +48,8 @@ public class Event {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     Boolean requestModeration;
 
-    @Column(columnDefinition = "INTEGER DEFAULT 0")
-    Integer confirmedRequests;
+    @Column(columnDefinition = "BIGINT DEFAULT 0")
+    Long confirmedRequests;
 
     @Column(nullable = false)
     LocalDateTime createdOn;
@@ -56,8 +61,8 @@ public class Event {
     @Enumerated(EnumType.STRING)
     State state;
 
-    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
-    Integer views;
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    Long views;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id", nullable = false)

@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.dto.*;
-import ru.practicum.request.dto.RequestDto;
-import ru.practicum.request.dto.RequestStatusResultDto;
-import ru.practicum.request.dto.RequestStatusUpdateDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.dto.EventRequestStatusUpdateResult;
+import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 
 import java.util.List;
 
@@ -18,35 +18,35 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
 
     @Override
-    public List<EventDto> findEventsByUserId(Long userId, Integer from, Integer size) {
+    public List<EventShortDto> findEventsByUserId(Long userId, Integer from, Integer size) {
         return List.of();
     }
 
     @Override
-    public EventDto findById(Long eventId, Long id) {
+    public EventFullDto findById(Long eventId, Long id) {
         return null;
     }
 
     @Override
     @Transactional
-    public EventDto saveEvent(EventCreateDto eventCreateDto, Long userId) {
+    public EventFullDto saveEvent(NewEventDto newEventDto, Long userId) {
         return null;
     }
 
     @Override
     @Transactional
-    public EventDto updateEvent(EventUpdateDto eventUpdateDto, Long eventId, Long id) {
+    public EventFullDto updateEvent(UpdateEventUserRequest updateEventUserRequest, Long eventId, Long id) {
         return null;
     }
 
     @Override
-    public List<RequestDto> findRequestsByEventId(Long userId, Long eventId) {
+    public List<ParticipationRequestDto> findRequestsByEventId(Long userId, Long eventId) {
         return List.of();
     }
 
     @Override
     @Transactional
-    public RequestStatusResultDto updateRequestStatus(RequestStatusUpdateDto requestDto, Long userId, Long eventId) {
+    public EventRequestStatusUpdateResult updateRequestStatus(EventRequestStatusUpdateRequest requestDto, Long userId, Long eventId) {
         return null;
     }
 }

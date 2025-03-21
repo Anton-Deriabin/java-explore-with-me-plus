@@ -5,29 +5,30 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.user.dto.UserDtoForEvent;
+import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventDto {
+public class EventFullDto {
     Long id;
 
     String annotation;
 
     CategoryDto category;
 
-    Integer confirmedRequests;
+    Long confirmedRequests;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdOn;
 
     String description;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     String eventDate;
 
-    UserDtoForEvent initiator;
+    UserShortDto initiator;
 
     LocationDto location;
 
