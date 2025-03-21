@@ -1,4 +1,4 @@
-package ru.practicum.category.service;
+package ru.practicum.category;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
-import ru.practicum.category.model.Category;
-import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import static ru.practicum.utils.LoggingUtils.logAndReturn;
@@ -81,11 +79,16 @@ public class CategoryServiceImpl implements CategoryService {
                     log.error("Category with id={} not found for update", catId);
                     return new NotFoundException(String.format("Category with id=%d was not found", catId));
                 });
-        if (categoryRepository.existsByName(categoryDto.getName())) {
-            log.warn("Category update failed - name {} already exists", categoryDto.getName());
-            throw new ConflictException(String.format("Name: %s already used by another category",
-                    categoryDto.getName()));
-        }
+
+        categoryRepository.findByName(categoryDto.getName())
+                .ifPresent(existingCategory -> {
+                    if (!existingCategory.getId().equals(catId)) {
+                        log.warn("Category update failed - name {} already exists", categoryDto.getName());
+                        throw new ConflictException(String.format("Name: %s already used by another category",
+                                categoryDto.getName()));
+                    }
+                });
+
         category.setName(categoryDto.getName());
         return logAndReturn(
                 categoryMapper.toDto(categoryRepository.save(category)),

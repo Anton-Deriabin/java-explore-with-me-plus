@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.category.model.Category;
+import ru.practicum.category.Category;
 import ru.practicum.user.User;
 
 import java.time.LocalDateTime;
