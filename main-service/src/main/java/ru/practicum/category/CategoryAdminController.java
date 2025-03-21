@@ -28,9 +28,9 @@ public class CategoryAdminController {
         return categoryService.updateCategory(catId, categoryDto);
     }
 
-//    @ResponseStatus(NO_CONTENT)
-//    @DeleteMapping("/{catId}")
-//    public void deleteCategory(@PathVariable Long catId) {
-//        categoryService.deleteCategory(catId);
-//    }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{catId}")
+    public void deleteCategory(@PathVariable Long catId) {
+        categoryService.deleteCategory(catId);
+    }
 }

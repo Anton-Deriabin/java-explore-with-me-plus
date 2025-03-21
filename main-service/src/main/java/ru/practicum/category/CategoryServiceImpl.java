@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
+import ru.practicum.event.EventRepository;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import static ru.practicum.utils.LoggingUtils.logAndReturn;
@@ -25,6 +26,7 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     CategoryRepository categoryRepository;
+    EventRepository eventRepository;
     CategoryMapper categoryMapper;
 
     @Override
@@ -96,13 +98,20 @@ public class CategoryServiceImpl implements CategoryService {
         );
     }
 
-//    @Override
-//    @Transactional
-//    public void deleteCategory(Long catId) {
-//        if (eventRepository.existsByCategoryId(catId)) {
-//            throw new CategoryNotEmptyException("The category is not empty");
-//        }
-//        categoryRepository.deleteById(catId);
-//    }
+    @Override
+    @Transactional
+    public void deleteCategory(Long catId) {
+        log.info("Attempting to delete category with id={}", catId);
+        if (eventRepository.existsByCategoryId(catId)) {
+            log.warn("Category with id={} is not empty and cannot be deleted", catId);
+            throw new ConflictException("The category is not empty");
+        }
+        categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", catId)));
+
+        categoryRepository.deleteById(catId);
+        logAndReturn(catId, id -> log.info("Category with id={} successfully deleted", id));
+    }
+
 
 }
