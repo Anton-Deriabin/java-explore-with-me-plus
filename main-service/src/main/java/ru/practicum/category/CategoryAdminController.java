@@ -1,4 +1,4 @@
-package ru.practicum.category.controller;
+package ru.practicum.category;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -7,7 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
-import ru.practicum.category.service.CategoryService;
 
 @Validated
 @RestController
@@ -29,9 +28,9 @@ public class CategoryAdminController {
         return categoryService.updateCategory(catId, categoryDto);
     }
 
-//    @ResponseStatus(NO_CONTENT)
-//    @DeleteMapping("/{catId}")
-//    public void deleteCategory(@PathVariable Long catId) {
-//        categoryService.deleteCategory(catId);
-//    }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{catId}")
+    public void deleteCategory(@PathVariable Long catId) {
+        categoryService.deleteCategory(catId);
+    }
 }

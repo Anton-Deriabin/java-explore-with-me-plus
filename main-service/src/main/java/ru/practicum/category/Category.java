@@ -1,4 +1,4 @@
-package ru.practicum.category.model;
+package ru.practicum.category;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,6 +17,6 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     String name;
 }
