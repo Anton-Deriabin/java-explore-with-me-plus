@@ -13,7 +13,7 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
-import ru.practicum.exception.NameExistException;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import static ru.practicum.utils.LoggingUtils.logAndReturn;
 
@@ -27,17 +27,19 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     CategoryRepository categoryRepository;
+    CategoryMapper categoryMapper;
 
     @Override
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
         log.info("Creating category with name: {}", newCategoryDto.getName());
         if (categoryRepository.existsByName(newCategoryDto.getName())) {
             log.warn("Category creation failed - name {} already exists", newCategoryDto.getName());
-            throw new NameExistException(String.format("Name: %s already used by another category", newCategoryDto.getName()), "The required object already used");
+            throw new ConflictException(String.format("Name: %s already used by another category",
+                    newCategoryDto.getName()));
         }
-        Category category = CategoryMapper.toCategory(newCategoryDto);
+        Category category = categoryMapper.toEntity(newCategoryDto);
         return logAndReturn(
-                CategoryMapper.toCategoryDto(categoryRepository.save(category)),
+                categoryMapper.toDto(categoryRepository.save(category)),
                 savedCategory -> log.info("Category created successfully: {}", savedCategory)
         );
     }
@@ -50,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
         return logAndReturn(
                 categoryRepository.findAll(page)
                         .stream()
-                        .map(CategoryMapper::toCategoryDto)
+                        .map(categoryMapper::toDto)
                         .toList(),
                 categories -> log.info("Fetched {} categories", categories.size())
         );
@@ -63,11 +65,10 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> {
                     log.error("Category with id={} not found", catId);
-                    return new NotFoundException(String.format("Category with id=%d was not found", catId),
-                            "The required object was not found.");
+                    return new NotFoundException(String.format("Category with id=%d was not found", catId));
                 });
         return logAndReturn(
-                CategoryMapper.toCategoryDto(category),
+                categoryMapper.toDto(category),
                 foundCategory -> log.info("Category found: {}", foundCategory)
         );
     }
@@ -78,16 +79,16 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> {
                     log.error("Category with id={} not found for update", catId);
-                    return new NotFoundException(String.format("Category with id=%d was not found", catId),
-                            "The required object was not found.");
+                    return new NotFoundException(String.format("Category with id=%d was not found", catId));
                 });
         if (categoryRepository.existsByName(categoryDto.getName())) {
             log.warn("Category update failed - name {} already exists", categoryDto.getName());
-            throw new NameExistException(String.format("Name: %s already used by another category", categoryDto.getName()), "The required object already used");
+            throw new ConflictException(String.format("Name: %s already used by another category",
+                    categoryDto.getName()));
         }
         category.setName(categoryDto.getName());
         return logAndReturn(
-                CategoryMapper.toCategoryDto(categoryRepository.save(category)),
+                categoryMapper.toDto(categoryRepository.save(category)),
                 updatedCategory -> log.info("Category updated successfully: {}", updatedCategory)
         );
     }

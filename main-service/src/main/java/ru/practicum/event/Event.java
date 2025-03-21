@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "events", schema = "public")
+@EqualsAndHashCode(of = "id")
 @Getter
 @Setter
 @ToString
@@ -43,8 +44,8 @@ public class Event {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     Boolean requestModeration;
 
-    @Column(columnDefinition = "INTEGER DEFAULT 0")
-    Integer confirmedRequests;
+    @Column(columnDefinition = "BIGINT DEFAULT 0")
+    Long confirmedRequests;
 
     @Column(nullable = false)
     LocalDateTime createdOn;
@@ -56,8 +57,8 @@ public class Event {
     @Enumerated(EnumType.STRING)
     State state;
 
-    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
-    Integer views;
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    Long views;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id", nullable = false)
