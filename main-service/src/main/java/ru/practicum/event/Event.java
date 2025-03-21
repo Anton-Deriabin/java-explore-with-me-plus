@@ -1,7 +1,6 @@
 package ru.practicum.event;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.model.Category;
@@ -25,15 +24,12 @@ public class Event {
     Long id;
 
     @Column(nullable = false, length = 120)
-    @Size(min = 3, max = 120)
     String title;
 
     @Column(nullable = false, length = 2000)
-    @Size(min = 20, max = 2000)
     String annotation;
 
     @Column(nullable = false, length = 7000)
-    @Size(min = 20, max = 7000)
     String description;
 
     @Column(name = "event_date", nullable = false)

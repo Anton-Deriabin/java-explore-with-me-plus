@@ -48,14 +48,13 @@ public class RequestServiceImpl implements RequestService {
         User requester = checkUserService.checkUser(userId);
         Event event = checkEventService.checkEvent(eventId);
         checksBeforeSave(requester, event);
-        Request request = Request.builder()
-                .requester(requester)
-                .event(event)
-                .created(LocalDateTime.now())
-                .status(event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
-                .build();
         return logAndReturn(
-                requestMapper.toDto(requestRepository.save(request)),
+                requestMapper.toDto(requestRepository.save(Request.builder()
+                        .requester(requester)
+                        .event(event)
+                        .created(LocalDateTime.now())
+                        .status(event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
+                        .build())),
                 savedRequest -> log.info("{} request created successfully: {}",
                         savedRequest.getStatus(), savedRequest)
         );
@@ -87,8 +86,7 @@ public class RequestServiceImpl implements RequestService {
                     event.getId()));
         }
         if (event.getParticipantLimit() > 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
-            throw new ConflictException(String.format("Event participant limit %d has been reached for event with id=%d",
-                    event.getParticipantLimit(), event.getId()));
+            throw new ConflictException("The participant limit has been reached");
         }
     }
 

@@ -10,14 +10,15 @@ import java.util.List;
 public interface EventService {
     EventFullDto saveEvent(NewEventDto newEventDto, Long userId);
 
-    List<EventShortDto> findEventsByUserId(Long userId, Integer from, Integer size);
+    List<EventShortDto> findEventsByInitiatorId(Long userId, Integer from, Integer size);
 
-    EventFullDto findById(Long eventId, Long id);
+    EventFullDto findById(Long userId, Long eventId);
 
-    EventFullDto updateEvent(UpdateEventUserRequest updateEventUserRequest, Long eventId, Long id);
+    EventFullDto updateEvent(UpdateEventUserRequest updateEventUserRequest, Long userId, Long eventId);
 
     List<ParticipationRequestDto> findRequestsByEventId(Long userId, Long eventId);
 
-    EventRequestStatusUpdateResult updateRequestStatus(EventRequestStatusUpdateRequest requestDto, Long userId, Long eventId);
+    EventRequestStatusUpdateResult updateRequestStatus(EventRequestStatusUpdateRequest requestDto, Long userId,
+                                                       Long eventId);
 }
 

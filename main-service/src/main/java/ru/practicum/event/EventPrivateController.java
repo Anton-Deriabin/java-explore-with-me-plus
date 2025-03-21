@@ -22,10 +22,10 @@ public class EventPrivateController {
     private final EventService eventService;
 
     @GetMapping()
-    public List<EventShortDto> findEventsByUserId(@PathVariable Long userId,
-                                             @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                             @Positive @RequestParam(defaultValue = "10") Integer size) {
-        return eventService.findEventsByUserId(userId, from, size);
+    public List<EventShortDto> findEventsByInitiatorId(@PathVariable Long userId,
+                                                       @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                       @Positive @RequestParam(defaultValue = "10") Integer size) {
+        return eventService.findEventsByInitiatorId(userId, from, size);
     }
 
     @GetMapping(eventIdPath)

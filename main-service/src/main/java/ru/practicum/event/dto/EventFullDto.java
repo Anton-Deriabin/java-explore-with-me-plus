@@ -26,7 +26,7 @@ public class EventFullDto {
     String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    String eventDate;
+    LocalDateTime eventDate;
 
     UserShortDto initiator;
 

@@ -31,6 +31,13 @@ public class ErrorHandler {
         return new ErrorResponse("BAD_REQUEST", "Incorrectly made request.", e.getMessage());
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleForbidden(ForbiddenException e) {
+        return new ErrorResponse("FORBIDDEN", "For the requested operation the conditions are not met.",
+                e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(final MethodArgumentNotValidException e) {
         List<String> errorMessages = e.getBindingResult().getAllErrors().stream()
@@ -43,10 +50,10 @@ public class ErrorHandler {
                 .toList();
         String firstErrorMessage = errorMessages.get(0);
         if (firstErrorMessage.contains("eventDate") &&
-                firstErrorMessage.contains("Event date must be at least two hours in the future")) {
+                firstErrorMessage.contains("должно содержать дату, которая еще не наступила.")) {
             ErrorResponse response = new ErrorResponse(
-                    "CONFLICT",
-                    "Integrity constraint has been violated.",
+                    "FORBIDDEN",
+                    "For the requested operation the conditions are not met.",
                     firstErrorMessage
             );
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);

@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = FuturePlusTwoHoursValidator.class)
 public @interface FuturePlusTwoHours {
-    String message() default "Event date must be at least two hours in the future";
+    String message() default "должно содержать дату, которая еще не наступила.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
