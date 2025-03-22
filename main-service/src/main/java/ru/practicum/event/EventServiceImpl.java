@@ -96,7 +96,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto updateEvent(UpdateEventUserRequest updateEventUserRequest, Long userId, Long eventId) {
+    public EventFullDto updateEvent(UpdateEventRequest updateEventRequest, Long userId, Long eventId) {
         checkUserService.checkUser(userId);
         Event event = checkEventService.checkEvent(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
@@ -106,42 +106,42 @@ public class EventServiceImpl implements EventService {
         if (event.getState() == State.PUBLISHED) {
             throw new ConflictException("Only pending or canceled events can be changed");
         }
-        if (updateEventUserRequest.getAnnotation() != null) {
-            event.setAnnotation(updateEventUserRequest.getAnnotation());
+        if (updateEventRequest.getAnnotation() != null) {
+            event.setAnnotation(updateEventRequest.getAnnotation());
         }
-        if (updateEventUserRequest.getCategory() != null) {
-            Category category = checkCategoryService.checkCategory(updateEventUserRequest.getCategory());
-            category.setId(updateEventUserRequest.getCategory());
+        if (updateEventRequest.getCategory() != null) {
+            Category category = checkCategoryService.checkCategory(updateEventRequest.getCategory());
+            category.setId(updateEventRequest.getCategory());
             event.setCategory(category);
         }
-        if (updateEventUserRequest.getDescription() != null) {
-            event.setDescription(updateEventUserRequest.getDescription());
+        if (updateEventRequest.getDescription() != null) {
+            event.setDescription(updateEventRequest.getDescription());
         }
-        if (updateEventUserRequest.getEventDate() != null) {
+        if (updateEventRequest.getEventDate() != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime eventDate = LocalDateTime.parse(updateEventUserRequest.getEventDate(), formatter);
+            LocalDateTime eventDate = LocalDateTime.parse(updateEventRequest.getEventDate(), formatter);
             event.setEventDate(eventDate);
         }
-        if (updateEventUserRequest.getLocation() != null) {
+        if (updateEventRequest.getLocation() != null) {
             Location location = new Location();
-            location.setLat(updateEventUserRequest.getLocation().getLat());
-            location.setLon(updateEventUserRequest.getLocation().getLon());
+            location.setLat(updateEventRequest.getLocation().getLat());
+            location.setLon(updateEventRequest.getLocation().getLon());
             event.setLocation(location);
         }
-        if (updateEventUserRequest.getPaid() != null) {
-            event.setPaid(updateEventUserRequest.getPaid());
+        if (updateEventRequest.getPaid() != null) {
+            event.setPaid(updateEventRequest.getPaid());
         }
-        if (updateEventUserRequest.getParticipantLimit() != null) {
-            event.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
+        if (updateEventRequest.getParticipantLimit() != null) {
+            event.setParticipantLimit(updateEventRequest.getParticipantLimit());
         }
-        if (updateEventUserRequest.getRequestModeration() != null) {
-            event.setRequestModeration(updateEventUserRequest.getRequestModeration());
+        if (updateEventRequest.getRequestModeration() != null) {
+            event.setRequestModeration(updateEventRequest.getRequestModeration());
         }
-        if (updateEventUserRequest.getTitle() != null) {
-            event.setTitle(updateEventUserRequest.getTitle());
+        if (updateEventRequest.getTitle() != null) {
+            event.setTitle(updateEventRequest.getTitle());
         }
-        if (updateEventUserRequest.getStateAction() != null) {
-            switch (updateEventUserRequest.getStateAction()) {
+        if (updateEventRequest.getStateAction() != null) {
+            switch (updateEventRequest.getStateAction()) {
                 case SEND_TO_REVIEW:
                     event.setState(State.PENDING);
                     break;
@@ -150,7 +150,7 @@ public class EventServiceImpl implements EventService {
                     break;
                 default:
                     throw new IllegalArgumentException("Неподдерживаемое действие: "
-                            + updateEventUserRequest.getStateAction());
+                            + updateEventRequest.getStateAction());
             }
         }
         return logAndReturn(eventMapper.toFullDto(eventRepository.save(event)),

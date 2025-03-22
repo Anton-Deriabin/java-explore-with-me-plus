@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @ToString
+@Builder
 public class Location {
 
     @Id

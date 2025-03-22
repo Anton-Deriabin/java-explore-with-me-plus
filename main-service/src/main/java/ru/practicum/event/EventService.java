@@ -14,7 +14,7 @@ public interface EventService {
 
     EventFullDto findById(Long userId, Long eventId);
 
-    EventFullDto updateEvent(UpdateEventUserRequest updateEventUserRequest, Long userId, Long eventId);
+    EventFullDto updateEvent(UpdateEventRequest updateEventRequest, Long userId, Long eventId);
 
     List<ParticipationRequestDto> findRequestsByEventId(Long userId, Long eventId);
 

@@ -1,6 +1,8 @@
 package ru.practicum.event.admin;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,14 +14,14 @@ import java.util.List;
 
 public interface EventAdminRepository extends JpaRepository<Event,Long> {
 
+    @EntityGraph(attributePaths = {"initiator", "category"})
     @Query("SELECT e FROM Event e " +
-            "JOIN FETCH e.category c " +
-            "WHERE e.id IN :users " +
+            "WHERE e.initiator.id IN :users " +
             "AND e.state IN :states " +
-            "AND c.id IN :categories " +
+            "AND e.category.id IN :categories " +
             "AND e.eventDate > :rangeStart " +
             "AND e.eventDate < :rangeEnd ")
-    List<Event> findEvents(@Param("users") List<Long> users, @Param("states") List<State> states,
+    Page<Event> findEvents(@Param("users") List<Long> users, @Param("states") List<State> states,
                            @Param("categories") List<Long> categories,
                            @Param("rangeStart") LocalDateTime rangeStart,
                            @Param("rangeEnd") LocalDateTime end,

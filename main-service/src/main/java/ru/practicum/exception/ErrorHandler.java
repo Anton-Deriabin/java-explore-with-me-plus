@@ -1,5 +1,6 @@
 package ru.practicum.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
 
@@ -35,8 +37,10 @@ public class ErrorHandler {
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleForbidden(ForbiddenException e) {
-        return new ErrorResponse("FORBIDDEN", "For the requested operation the conditions are not met.",
+        log.warn("Handling ForbiddenException: {}", e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse("FORBIDDEN", "For the requested operation the conditions are not met.",
                 e.getMessage());
+        return errorResponse;
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -60,15 +64,15 @@ public class ErrorHandler {
                 })
                 .toList();
         String firstErrorMessage = errorMessages.get(0);
-        if (firstErrorMessage.contains("eventDate") &&
-                firstErrorMessage.contains("должно содержать дату, которая еще не наступила.")) {
-            ErrorResponse response = new ErrorResponse(
-                    "FORBIDDEN",
-                    "For the requested operation the conditions are not met.",
-                    firstErrorMessage
-            );
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-        }
+//        if (firstErrorMessage.contains("eventDate") &&
+//                firstErrorMessage.contains("должно содержать дату, которая еще не наступила.")) {
+//            ErrorResponse response = new ErrorResponse(
+//                    "FORBIDDEN",
+//                    "For the requested operation the conditions are not met.",
+//                    firstErrorMessage
+//            );
+//            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+//        }
         ErrorResponse response = new ErrorResponse(
                 "BAD_REQUEST",
                 "Incorrectly made request.",
@@ -76,4 +80,6 @@ public class ErrorHandler {
         );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+
 }

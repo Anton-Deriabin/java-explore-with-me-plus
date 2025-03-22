@@ -10,7 +10,7 @@ import ru.practicum.validation.FuturePlusTwoHours;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateEventUserRequest {
+public class UpdateEventRequest {
 
     @Size(min = 20, max = 2000)
     String annotation;
