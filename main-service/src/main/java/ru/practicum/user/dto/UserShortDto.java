@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserDtoForEvent {
+public class UserShortDto {
     Long id;
     String name;
 }

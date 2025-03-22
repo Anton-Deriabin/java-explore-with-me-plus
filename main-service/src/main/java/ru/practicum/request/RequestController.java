@@ -1,8 +1,9 @@
 package ru.practicum.request;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.request.dto.RequestDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
 
 import java.util.List;
 
@@ -14,17 +15,18 @@ public class RequestController {
     private final RequestService requestService;
 
     @GetMapping()
-    public List<RequestDto> findRequestsByUserId(@PathVariable Long userId) {
-        return requestService.findEventsByUserId(userId);
+    public List<ParticipationRequestDto> findRequestsByUserId(@PathVariable Long userId) {
+        return requestService.findRequestsByUserId(userId);
     }
 
     @PostMapping()
-    public RequestDto saveRequest(@PathVariable Long userId, @RequestParam Integer eventId) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ParticipationRequestDto saveRequest(@PathVariable Long userId, @RequestParam Long eventId) {
         return requestService.saveRequest(userId, eventId);
     }
 
     @PatchMapping(cancelPath)
-    public RequestDto cancelRequest(@PathVariable Long userId, @PathVariable Long requestId) {
+    public ParticipationRequestDto cancelRequest(@PathVariable Long userId, @PathVariable Long requestId) {
         return requestService.cancelRequest(userId, requestId);
     }
 }

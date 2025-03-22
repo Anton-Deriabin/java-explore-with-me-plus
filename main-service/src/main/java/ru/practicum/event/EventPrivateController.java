@@ -4,11 +4,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.*;
-import ru.practicum.request.dto.RequestDto;
-import ru.practicum.request.dto.RequestStatusResultDto;
-import ru.practicum.request.dto.RequestStatusUpdateDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.dto.EventRequestStatusUpdateResult;
+import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 
 import java.util.List;
 
@@ -21,39 +22,40 @@ public class EventPrivateController {
     private final EventService eventService;
 
     @GetMapping()
-    public List<EventDto> findEventsByUserId(@PathVariable Long userId,
-                                             @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                             @Positive @RequestParam(defaultValue = "10") Integer size) {
-        return eventService.findEventsByUserId(userId, from, size);
+    public List<EventShortDto> findEventsByInitiatorId(@PathVariable Long userId,
+                                                       @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                       @Positive @RequestParam(defaultValue = "10") Integer size) {
+        return eventService.findEventsByInitiatorId(userId, from, size);
     }
 
     @GetMapping(eventIdPath)
-    public EventDto findById(@PathVariable Long userId, @PathVariable Long eventId) {
+    public EventFullDto findById(@PathVariable Long userId, @PathVariable Long eventId) {
         return eventService.findById(userId, eventId);
     }
 
     @GetMapping(eventIdPath + requestsPath)
-    public List<RequestDto> findRequestsByEventId(@PathVariable Long userId,
-                                                  @PathVariable Long eventId) {
+    public List<ParticipationRequestDto> findRequestsByEventId(@PathVariable Long userId,
+                                                               @PathVariable Long eventId) {
         return eventService.findRequestsByEventId(userId, eventId);
     }
 
     @PostMapping()
-    public EventDto saveEvent(@Valid @RequestBody EventCreateDto eventCreateDto,
+    @ResponseStatus(HttpStatus.CREATED)
+    public EventFullDto saveEvent(@Valid @RequestBody NewEventDto newEventDto,
                               @PathVariable Long userId) {
-        return eventService.saveEvent(eventCreateDto, userId);
+        return eventService.saveEvent(newEventDto, userId);
     }
 
     @PatchMapping(eventIdPath)
-    public EventDto updateEvent(@Valid @RequestBody EventUpdateDto eventUpdateDto,
+    public EventFullDto updateEvent(@Valid @RequestBody UpdateEventUserRequest updateEventUserRequest,
                                 @PathVariable Long userId,
                                 @PathVariable Long eventId) {
-        return eventService.updateEvent(eventUpdateDto, userId, eventId);
+        return eventService.updateEvent(updateEventUserRequest, userId, eventId);
     }
 
     @PatchMapping(eventIdPath + requestsPath)
-    public RequestStatusResultDto updateRequestStatus(
-            @RequestBody RequestStatusUpdateDto requestDto,
+    public EventRequestStatusUpdateResult updateRequestStatus(
+            @RequestBody EventRequestStatusUpdateRequest requestDto,
             @PathVariable Long userId,
             @PathVariable Long eventId) {
         return eventService.updateRequestStatus(requestDto, userId, eventId);

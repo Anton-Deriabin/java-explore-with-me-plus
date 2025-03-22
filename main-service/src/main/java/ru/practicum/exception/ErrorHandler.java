@@ -14,17 +14,29 @@ import java.util.List;
 @RestControllerAdvice
 public class ErrorHandler {
 
-
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final NotFoundException e) {
-        return new ErrorResponse("NOT_FOUND", e.getReason(), e.getMessage());
+        return new ErrorResponse("NOT_FOUND", "The required object was not found.", e.getMessage());
     }
 
-    @ExceptionHandler(NameExistException.class)
+    @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleNameExist(final NameExistException e) {
-        return new ErrorResponse("CONFLICT", e.getReason(), e.getMessage());
+    public ErrorResponse handleConflict(ConflictException e) {
+        return new ErrorResponse("CONFLICT", "Integrity constraint has been violated.", e.getMessage());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidation(ValidationException e) {
+        return new ErrorResponse("BAD_REQUEST", "Incorrectly made request.", e.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleForbidden(ForbiddenException e) {
+        return new ErrorResponse("FORBIDDEN", "For the requested operation the conditions are not met.",
+                e.getMessage());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -49,10 +61,10 @@ public class ErrorHandler {
                 .toList();
         String firstErrorMessage = errorMessages.get(0);
         if (firstErrorMessage.contains("eventDate") &&
-                firstErrorMessage.contains("Event date must be at least two hours in the future")) {
+                firstErrorMessage.contains("должно содержать дату, которая еще не наступила.")) {
             ErrorResponse response = new ErrorResponse(
-                    "CONFLICT",
-                    "Conflict with event date",
+                    "FORBIDDEN",
+                    "For the requested operation the conditions are not met.",
                     firstErrorMessage
             );
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -64,5 +76,4 @@ public class ErrorHandler {
         );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
 }
