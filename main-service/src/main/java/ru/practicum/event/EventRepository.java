@@ -28,4 +28,22 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                            @Param("rangeStart") LocalDateTime rangeStart,
                            @Param("rangeEnd") LocalDateTime end,
                            Pageable pageable);
+
+
+    @EntityGraph(attributePaths = {"category"})
+    @Query("SELECT e FROM Event e " +
+            "WHERE (:text IS NULL OR ( " +
+            "      LOWER(e.annotation) LIKE LOWER(CONCAT('%', :text, '%')) OR " +
+            "      LOWER(e.description) LIKE LOWER(CONCAT('%', :text, '%')))) " +
+            "AND (:paid IS NULL OR e.paid = :paid) " +
+            "AND (:rangeStart IS NULL OR e.eventDate > :rangeStart) " +
+            "AND (:categories IS NULL OR e.category.id IN :categories) " +
+            "AND (:rangeEnd IS NULL OR e.eventDate < :rangeEnd) " +
+            "AND (COALESCE(:onlyAvailable, false) = false OR e.participantLimit > e.confirmedRequests)")
+    Page<Event> findEvents(@Param("text") String text,@Param("paid") Boolean paid,
+                              @Param("categories") List<Long> categories,
+                              @Param("rangeStart") LocalDateTime rangeStart,
+                              @Param("rangeEnd") LocalDateTime rangeEnd,
+                              @Param("onlyAvailable") Boolean onlyAvailable,Pageable pageable);
+
 }
