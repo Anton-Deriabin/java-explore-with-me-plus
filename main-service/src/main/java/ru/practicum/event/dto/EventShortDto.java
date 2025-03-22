@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.user.dto.UserShortDto;
 
+import java.time.LocalDateTime;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventShortDto {
@@ -19,7 +21,7 @@ public class EventShortDto {
     Long confirmedRequests;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    String eventDate;
+    LocalDateTime eventDate;
 
     UserShortDto initiator;
 

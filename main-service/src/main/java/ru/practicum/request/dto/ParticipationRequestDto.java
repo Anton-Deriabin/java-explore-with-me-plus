@@ -6,13 +6,15 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.request.RequestStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.time.LocalDateTime;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ParticipationRequestDto {
     Long id;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    String created;
+    LocalDateTime created;
 
     Long event;
 

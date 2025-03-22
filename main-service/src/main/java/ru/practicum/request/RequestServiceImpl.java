@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.Event;
+import ru.practicum.event.EventRepository;
 import ru.practicum.event.State;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.request.dto.ParticipationRequestDto;
@@ -27,6 +28,7 @@ import static ru.practicum.utils.LoggingUtils.logAndReturn;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RequestServiceImpl implements RequestService {
     RequestRepository requestRepository;
+    EventRepository eventRepository;
     RequestMapper requestMapper;
     CheckUserService checkUserService;
     CheckEventService checkEventService;
@@ -48,16 +50,31 @@ public class RequestServiceImpl implements RequestService {
         User requester = checkUserService.checkUser(userId);
         Event event = checkEventService.checkEvent(eventId);
         checksBeforeSave(requester, event);
-        return logAndReturn(
+        RequestStatus status = event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED;
+        if (event.getParticipantLimit() == 0) {
+            status = RequestStatus.CONFIRMED;
+        } else {
+            if (event.getParticipantLimit() - event.getConfirmedRequests() == 0) {
+                throw new ConflictException("Достигнут лимит участников события");
+            }
+        }
+        ParticipationRequestDto dto = logAndReturn(
                 requestMapper.toDto(requestRepository.save(Request.builder()
                         .requester(requester)
                         .event(event)
                         .created(LocalDateTime.now())
-                        .status(event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
+                        .status(status)
                         .build())),
                 savedRequest -> log.info("{} request created successfully: {}",
                         savedRequest.getStatus(), savedRequest)
         );
+
+        if (status.equals(RequestStatus.CONFIRMED)) {
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+            eventRepository.save(event);
+        }
+
+        return dto;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ru.practicum.event.admin;
 
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -33,6 +34,7 @@ public class EventAdminController {
         return eventAdminService.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
+    @Transactional
     @PatchMapping("/{eventId}")
     public EventFullDto publishEvent(@RequestBody(required = false) @Valid  UpdateEventRequest updateEventRequest,
                                       @PathVariable Long eventId) {

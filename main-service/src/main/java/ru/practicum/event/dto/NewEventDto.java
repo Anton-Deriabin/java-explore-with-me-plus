@@ -1,8 +1,6 @@
 package ru.practicum.event.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -32,11 +30,12 @@ public class NewEventDto {
     @NotNull
     LocationDto location;
 
-    Boolean paid;
+    Boolean paid = false;
 
-    Integer participantLimit;
+    @PositiveOrZero
+    Integer participantLimit = 0;
 
-    Boolean requestModeration;
+    Boolean requestModeration = true;
 
     @NotBlank
     @Size(min = 3, max = 120)

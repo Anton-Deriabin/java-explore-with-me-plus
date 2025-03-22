@@ -1,16 +1,17 @@
 package ru.practicum.event.pub;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping(path = "/events")
@@ -20,18 +21,25 @@ public class EventPublicController {
     EventPublicService eventPublicService;
 
     @GetMapping
-    public List<EventShortDto> getEvents(@RequestParam String text,
-                                         @RequestParam List<Long> categories,
-                                         @RequestParam Boolean paid,
-                                         @RequestParam String rangeStart,
-                                         @RequestParam String rangeEnd,
+    public List<EventShortDto> getEvents(@RequestParam(required = false) String text,
+                                         @RequestParam(required = false) List<Long> categories,
+                                         @RequestParam(required = false) Boolean paid,
+                                         @RequestParam(required = false) String rangeStart,
+                                         @RequestParam(required = false) String rangeEnd,
                                          @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-                                         @RequestParam String sort,
+                                         @RequestParam(required = false) String sort,
                                          @RequestParam(defaultValue = "0") Integer from,
-                                         @RequestParam(defaultValue = "10") Integer size) {
+                                         @RequestParam(defaultValue = "10") Integer size,
+                                         HttpServletRequest request) {
 
-        return eventPublicService.getEvents(text,categories,paid,rangeStart,rangeEnd,onlyAvailable,sort,from,size);
+        return eventPublicService.getEvents(text,categories,paid,rangeStart,rangeEnd,onlyAvailable,sort,from,size,
+                request);
 
+    }
+
+    @GetMapping("/{id}")
+    public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
+        return eventPublicService.getEventById(id,request);
     }
 
 

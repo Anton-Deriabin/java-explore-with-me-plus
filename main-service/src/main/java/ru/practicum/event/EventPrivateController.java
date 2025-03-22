@@ -41,7 +41,7 @@ public class EventPrivateController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public EventFullDto saveEvent(@Valid @RequestBody NewEventDto newEventDto,
+    public EventFullDto saveEvent(@RequestBody @Valid  NewEventDto newEventDto,
                               @PathVariable Long userId) {
         return eventService.saveEvent(newEventDto, userId);
     }

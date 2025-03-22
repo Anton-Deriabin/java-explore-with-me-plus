@@ -53,9 +53,9 @@ public class EventServiceImpl implements EventService {
         Pageable pageRequest = PageRequest.of(from / size, size);
         Page<Event> eventPage = eventRepository.findByInitiatorId(userId, pageRequest);
         return logAndReturn(eventPage.getContent()
-                .stream()
-                .map(eventMapper::toShortDto)
-                .toList(),
+                        .stream()
+                        .map(eventMapper::toShortDto)
+                        .toList(),
                 events -> log.info("Found {} events for user with id={}",
                         events.size(), userId)
         );
@@ -182,6 +182,11 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException(String.format("User with id=%d isn't an initiator for event with id=%d", userId,
                     eventId));
         }
+
+        if ((event.getParticipantLimit() != 0) && (event.getParticipantLimit()
+                .equals(event.getConfirmedRequests().intValue()))) {
+            throw new ConflictException("There is no more space");
+        }
         List<Request> requests = requestRepository.findAllByIdInAndStatus(requestDto.getRequestIds(),
                 RequestStatus.PENDING);
         if (requests.size() != requestDto.getRequestIds().size()) {
@@ -190,25 +195,14 @@ public class EventServiceImpl implements EventService {
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
         List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
         List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
-        if (event.getParticipantLimit() == 0 || !event.getRequestModeration()) {
+        if (requestDto.getStatus().equals(RequestStatus.CONFIRMED)) {
             confirmedRequests = processRequests(requests, requestDto.getStatus());
             result.setConfirmedRequests(confirmedRequests);
-            result.setRejectedRequests(rejectedRequests);
             event.setConfirmedRequests(event.getConfirmedRequests() + confirmedRequests.size());
-        } else if (event.getParticipantLimit() > 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
-            throw new ConflictException("The participant limit has been reached");
-        } else {
-            int availableSlots = (int) (event.getParticipantLimit() - event.getConfirmedRequests());
-            if (availableSlots < requests.size()) {
-                confirmedRequests = processRequests(requests.subList(0, availableSlots), requestDto.getStatus());
-                rejectedRequests = processRequests(requests.subList(availableSlots, requests.size()),
-                        RequestStatus.REJECTED);
-            } else {
-                confirmedRequests = processRequests(requests, requestDto.getStatus());
-            }
-            result.setConfirmedRequests(confirmedRequests);
+        } else if (requestDto.getStatus().equals(RequestStatus.REJECTED)) {
+            confirmedRequests = null;
+            rejectedRequests = processRequests(requests, requestDto.getStatus());
             result.setRejectedRequests(rejectedRequests);
-            event.setConfirmedRequests(event.getConfirmedRequests() + confirmedRequests.size());
         }
         eventRepository.save(event);
         return result;

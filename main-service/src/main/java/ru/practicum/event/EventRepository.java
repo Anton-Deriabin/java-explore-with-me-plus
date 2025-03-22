@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findByInitiatorId(Long userId, Pageable pageable);
@@ -18,9 +19,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @EntityGraph(attributePaths = {"initiator", "category"})
     @Query("SELECT e FROM Event e " +
-            "WHERE e.initiator.id IN :users " +
-            "AND e.state IN :states " +
-            "AND e.category.id IN :categories " +
+            "WHERE (:users IS NULL OR e.initiator.id IN :users) " +
+            "AND (:states IS NULL OR e.state IN :states) " +
+            "AND (:categories IS NULL OR e.category.id IN :categories) " +
             "AND e.eventDate > :rangeStart " +
             "AND e.eventDate < :rangeEnd ")
     Page<Event> findAllEventsByAdmin(@Param("users") List<Long> users, @Param("states") List<State> states,
@@ -32,18 +33,24 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @EntityGraph(attributePaths = {"category"})
     @Query("SELECT e FROM Event e " +
-            "WHERE (:text IS NULL OR ( " +
-            "      LOWER(e.annotation) LIKE LOWER(CONCAT('%', :text, '%')) OR " +
-            "      LOWER(e.description) LIKE LOWER(CONCAT('%', :text, '%')))) " +
-            "AND (:paid IS NULL OR e.paid = :paid) " +
-            "AND (:rangeStart IS NULL OR e.eventDate > :rangeStart) " +
-            "AND (:categories IS NULL OR e.category.id IN :categories) " +
-            "AND (:rangeEnd IS NULL OR e.eventDate < :rangeEnd) " +
-            "AND (COALESCE(:onlyAvailable, false) = false OR e.participantLimit > e.confirmedRequests)")
-    Page<Event> findEvents(@Param("text") String text,@Param("paid") Boolean paid,
-                              @Param("categories") List<Long> categories,
-                              @Param("rangeStart") LocalDateTime rangeStart,
-                              @Param("rangeEnd") LocalDateTime rangeEnd,
-                              @Param("onlyAvailable") Boolean onlyAvailable,Pageable pageable);
+            "WHERE ((:text IS NULL OR " +
+            "       LOWER(e.annotation) LIKE LOWER(CONCAT('%', :text, '%')) OR " +
+            "       LOWER(e.description) LIKE LOWER(CONCAT('%', :text, '%')))) " +
+            "AND (e.paid = :paid OR :paid IS NULL) " +
+            "AND (e.category.id IN :categories OR :categories IS NULL) " +
+            "AND (COALESCE(:onlyAvailable, false) = false OR e.participantLimit > e.confirmedRequests) " +
+            "AND (e.eventDate > :rangeStart) " +
+            "AND (e.eventDate < :rangeEnd) " +
+            "AND (e.state = :state OR :state IS NULL)")
+    Page<Event> findEvents(@Param("text") String text, @Param("paid") Boolean paid,
+                           @Param("rangeStart") LocalDateTime rangeStart,
+                           @Param("rangeEnd") LocalDateTime rangeEnd,
+                           @Param("categories") List<Long> categories, Boolean onlyAvailable,
+                           @Param("state") State state,
+                           Pageable pageable);
+
+    Optional<Event> findByIdAndState(Long id,State state);
+
+    Boolean existsByCategoryId(Long catId);
 
 }

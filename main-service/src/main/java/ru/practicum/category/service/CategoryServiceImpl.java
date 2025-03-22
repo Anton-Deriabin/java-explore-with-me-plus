@@ -13,11 +13,13 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.event.EventRepository;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import static ru.practicum.utils.LoggingUtils.logAndReturn;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,6 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
+    EventRepository eventRepository;
 
     @Override
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
@@ -81,7 +84,8 @@ public class CategoryServiceImpl implements CategoryService {
                     log.error("Category with id={} not found for update", catId);
                     return new NotFoundException(String.format("Category with id=%d was not found", catId));
                 });
-        if (categoryRepository.existsByName(categoryDto.getName())) {
+        Optional<Category> optionalCategory = categoryRepository.findByName(categoryDto.getName());
+        if ((optionalCategory.isPresent()) && !optionalCategory.get().getId().equals(catId)) {
             log.warn("Category update failed - name {} already exists", categoryDto.getName());
             throw new ConflictException(String.format("Name: %s already used by another category",
                     categoryDto.getName()));
@@ -93,13 +97,13 @@ public class CategoryServiceImpl implements CategoryService {
         );
     }
 
-//    @Override
-//    @Transactional
-//    public void deleteCategory(Long catId) {
-//        if (eventRepository.existsByCategoryId(catId)) {
-//            throw new CategoryNotEmptyException("The category is not empty");
-//        }
-//        categoryRepository.deleteById(catId);
-//    }
+    @Override
+    @Transactional
+    public void deleteCategory(Long catId) {
+        if (eventRepository.existsByCategoryId(catId)) {
+            throw new ConflictException("The category is not empty");
+        }
+        categoryRepository.deleteById(catId);
+    }
 
 }

@@ -1,5 +1,6 @@
 package ru.practicum.event.dto;
 
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class UpdateEventRequest {
 
     Boolean paid;
 
+    @PositiveOrZero
     Integer participantLimit;
 
     Boolean requestModeration;

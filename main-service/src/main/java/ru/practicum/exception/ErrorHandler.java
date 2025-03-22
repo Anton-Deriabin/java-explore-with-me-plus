@@ -22,9 +22,9 @@ public class ErrorHandler {
         return new ErrorResponse("NOT_FOUND", "The required object was not found.", e.getMessage());
     }
 
-    @ExceptionHandler(ConflictException.class)
+    @ExceptionHandler({ConflictException.class,DataIntegrityViolationException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflict(ConflictException e) {
+    public ErrorResponse handleConflict(RuntimeException e) {
         return new ErrorResponse("CONFLICT", "Integrity constraint has been violated.", e.getMessage());
     }
 
@@ -38,20 +38,12 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleForbidden(ForbiddenException e) {
         log.warn("Handling ForbiddenException: {}", e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse("FORBIDDEN", "For the requested operation the conditions are not met.",
+        ErrorResponse errorResponse = new ErrorResponse("FORBIDDEN",
+                "For the requested operation the conditions are not met.",
                 e.getMessage());
         return errorResponse;
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflict(final DataIntegrityViolationException e) {
-        return new ErrorResponse(
-                "CONFLICT",
-                "Integrity constraint has been violated.",
-                e.getMessage()
-        );
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(final MethodArgumentNotValidException e) {

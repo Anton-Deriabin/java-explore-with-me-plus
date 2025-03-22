@@ -36,20 +36,27 @@ public class EventAdminServiceImpl implements EventAdminService {
     CheckEventService checkEventService;
     CheckCategoryService checkCategoryService;
 
+    static LocalDateTime minTime = LocalDateTime.of(1970, 1, 1, 0, 0);
+    static LocalDateTime maxTime = LocalDateTime.of(3000, 1, 1, 0, 0);
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @Override
-    public List<EventFullDto> getEvents(List<Long> users, List<String> states,
+    public List<EventFullDto> getEvents(List<Long> users, List<String> statesStr,
                                         List<Long> categories, String rangeStart,
                                         String rangeEnd, Integer from, Integer size) {
 
+        LocalDateTime start = rangeStart != null ? LocalDateTime.parse(rangeStart, formatter) :
+                minTime;
+        LocalDateTime end = rangeEnd != null ? LocalDateTime.parse(rangeEnd, formatter) :
+                maxTime;
+
+        List<State> states = statesStr != null ? statesStr.stream().map(State::valueOf).toList() : null;
+
         Pageable pageable = PageRequest.of(from / size, size);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        if (users == null && states == null && categories == null && rangeStart == null && rangeEnd == null) {
-            return eventRepository.findAll(pageable).stream().map(eventMapper::toFullDto).toList();
-        } else {
-            return eventRepository.findAllEventsByAdmin(users, states.stream().map(State::valueOf).toList(),
-                    categories, LocalDateTime.parse(rangeStart, formatter),
-                    LocalDateTime.parse(rangeEnd, formatter), pageable).stream().map(eventMapper::toFullDto).toList();
-        }
+        return eventRepository.findAllEventsByAdmin(users, states,
+                categories, start,
+                end, pageable).stream().map(eventMapper::toFullDto).toList();
+
     }
 
     @Override
