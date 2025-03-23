@@ -20,13 +20,13 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
                              @Param("endTime") LocalDateTime endTime,
                              @Param("uris") List<String> uris);
 
-    @Query("SELECT COUNT(DISTINCT e.app) " +
+    @Query("SELECT new ru.practicum.StatsDto(e.app, e.uri, COUNT(DISTINCT e.ip)) " +
             "FROM EndpointHit e " +
-            "WHERE e.app = :app " +
-            "AND e.uri = :uri " +
-            "AND e.timestamp BETWEEN :startTime AND :endTime")
-    long countDistinctByAppAndUriAndTimestampBetween(@Param("app") String app,
-                                                     @Param("uri") String uri,
-                                                     @Param("startTime") LocalDateTime startTime,
-                                                     @Param("endTime") LocalDateTime endTime);
+            "WHERE e.timestamp BETWEEN :startTime AND :endTime " +
+            "AND (:uris IS NULL OR e.uri IN :uris) " +
+            "GROUP BY e.app, e.uri " +
+            "ORDER BY COUNT(DISTINCT e.ip) DESC")
+    List<StatsDto> findStatsWithUniqueIp(@Param("startTime") LocalDateTime startTime,
+                                         @Param("endTime") LocalDateTime endTime,
+                                         @Param("uris") List<String> uris);
 }
