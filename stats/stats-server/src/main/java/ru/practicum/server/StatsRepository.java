@@ -29,12 +29,4 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
     List<StatsDto> findStatsWithUniqueIp(@Param("startTime") LocalDateTime startTime,
                                          @Param("endTime") LocalDateTime endTime,
                                          @Param("uris") List<String> uris);
-
-    @Query("SELECT DISTINCT e.ip " +
-            "FROM EndpointHit e " +
-            "WHERE e.uri = :uri " +
-            "AND e.timestamp BETWEEN :startTime AND :endTime")
-    List<String> findDistinctIpsByUri(@Param("uri") String uri,
-                                      @Param("startTime") LocalDateTime startTime,
-                                      @Param("endTime") LocalDateTime endTime);
 }

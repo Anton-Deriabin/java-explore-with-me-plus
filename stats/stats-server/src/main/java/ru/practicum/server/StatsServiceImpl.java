@@ -34,12 +34,6 @@ public class StatsServiceImpl implements StatsService {
         LocalDateTime endTime = LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         List<StatsDto> stats;
         if (unique) {
-            if (uris != null) {
-                for (String uri : uris) {
-                    List<String> distinctIps = statsRepository.findDistinctIpsByUri(uri, startTime, endTime);
-                    log.info("Уникальные IP для uri={}: {}", uri, distinctIps);
-                }
-            }
             stats = statsRepository.findStatsWithUniqueIp(startTime, endTime, uris);
             stats.forEach(stat -> log.info("Уникальные IP для app={}, uri={}: {}",
                     stat.getApp(), stat.getUri(), stat.getHits()));
