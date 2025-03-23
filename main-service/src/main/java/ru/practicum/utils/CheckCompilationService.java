@@ -13,9 +13,9 @@ import ru.practicum.exception.NotFoundException;
 public class CheckCompilationService {
     private final CompilationRepository compilationRepository;
 
-    public Compilation checkCompilation(Long categoryId) {
-        return compilationRepository.findById(categoryId)
+    public Compilation checkCompilation(Long compId) {
+        return compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException(String.format("Compilation with id=%d was not found",
-                        categoryId)));
+                        compId)));
     }
 }

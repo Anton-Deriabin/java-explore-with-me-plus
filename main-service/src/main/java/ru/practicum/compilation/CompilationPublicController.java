@@ -16,11 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompilationPublicController {
-    final String compilationIdPath = "/{eventId}";
+    final String compilationIdPath = "/{compId}";
     final CompilationService compilationService;
 
     @GetMapping()
-    public List<CompilationDto> findCompilationsByPinned(@RequestParam Boolean pinned,
+    public List<CompilationDto> findCompilationsByPinned(@RequestParam(required = false) Boolean pinned,
                                                         @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                         @Positive @RequestParam(defaultValue = "10") Integer size) {
         return compilationService.findCompilationsByPinned(pinned, from, size);

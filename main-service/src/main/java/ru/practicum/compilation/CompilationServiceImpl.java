@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,13 +33,16 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public List<CompilationDto> findCompilationsByPinned(Boolean pinned, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size);
-        return logAndReturn(compilationRepository.findByPinned(pinned, pageable)
-                        .stream()
+        Page<Compilation> compilations;
+        if (pinned == null) {
+            compilations = compilationRepository.findAll(pageable);
+        } else {
+            compilations = compilationRepository.findByPinned(pinned, pageable);
+        }
+        return logAndReturn(compilations.stream()
                         .map(compilationMapper::toDto)
                         .collect(Collectors.toList()),
-                comp -> log.info("Found {} compilations",
-                        comp.size())
-        );
+                comp -> log.info("Found {} compilations", comp.size()));
     }
 
     @Override
