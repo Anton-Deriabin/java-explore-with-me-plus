@@ -11,14 +11,13 @@ import java.util.Set;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NewCompilationDto {
+public class UpdateCompilationRequest {
 
     @NotBlank
     @Size(min = 1, max = 50)
     String title;
 
-    Boolean pinned = false;
+    Boolean pinned;
 
-    Set<Long> events = new HashSet<>();
-
+    Set<Long> events;
 }
