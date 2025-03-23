@@ -20,7 +20,7 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
                              @Param("endTime") LocalDateTime endTime,
                              @Param("uris") List<String> uris);
 
-    @Query("SELECT COUNT(DISTINCT e.ip) " +
+    @Query("SELECT COUNT(DISTINCT e.app) " +
             "FROM EndpointHit e " +
             "WHERE e.app = :app " +
             "AND e.uri = :uri " +
@@ -29,5 +29,4 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
                                                      @Param("uri") String uri,
                                                      @Param("startTime") LocalDateTime startTime,
                                                      @Param("endTime") LocalDateTime endTime);
-
 }
