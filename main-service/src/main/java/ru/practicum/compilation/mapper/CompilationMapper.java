@@ -7,6 +7,7 @@ import ru.practicum.category.model.Category;
 import ru.practicum.compilation.Compilation;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
+import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.event.Event;
 import ru.practicum.event.mapper.EventMapper;
 
@@ -19,6 +20,10 @@ public interface CompilationMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "events", ignore = true)
     Compilation toCompilation(NewCompilationDto newCompilationDto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "events", ignore = true)
+    Compilation toCompilation(UpdateCompilationRequest updateCompilationRequest);
 
 
     CompilationDto toDto(Compilation compilation);

@@ -11,6 +11,7 @@ import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.mapper.CompilationMapper;
+import ru.practicum.utils.CheckCompilationService;
 import ru.practicum.utils.CheckEventService;
 
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class CompilationAdminServiceImpl implements CompilationAdminService {
 
     CompilationMapper compilationMapper;
+    CheckCompilationService checkCompilationService;
     CheckEventService checkEventService;
     CompilationRepository compilationRepository;
 
@@ -39,6 +41,18 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     @Override
     @Transactional
     public CompilationDto updateCompilation(UpdateCompilationRequest updateCompilationRequest,Long compId) {
-        return null;
+        Compilation compilation = checkCompilationService.checkCompilation(compId);
+
+        if (updateCompilationRequest.getTitle()!=null) {
+            compilation.setTitle(updateCompilationRequest.getTitle());
+        }
+        if (updateCompilationRequest.getPinned()!=null) {
+            compilation.setPinned(updateCompilationRequest.getPinned());
+        }
+        if (updateCompilationRequest.getEvents()!=null && !updateCompilationRequest.getEvents().isEmpty()) {
+            compilation.setEvents(updateCompilationRequest.getEvents().stream()
+                    .map(checkEventService::checkEvent).collect(Collectors.toSet()));
+        }
+        return compilationMapper.toDto(compilationRepository.save(compilation));
     }
 }

@@ -13,7 +13,6 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateCompilationRequest {
 
-    @NotBlank
     @Size(min = 1, max = 50)
     String title;
 
