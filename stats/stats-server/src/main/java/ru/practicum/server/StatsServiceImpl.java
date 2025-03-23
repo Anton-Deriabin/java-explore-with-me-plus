@@ -10,7 +10,6 @@ import ru.practicum.StatsDto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.practicum.utils.LoggingUtils.logAndReturn;
 
@@ -33,17 +32,16 @@ public class StatsServiceImpl implements StatsService {
     public List<StatsDto> getStats(String start, String end, List<String> uris, boolean unique) {
         LocalDateTime startTime = LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime endTime = LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        List<StatsDto> stats = statsRepository.findStats(startTime, endTime, uris);
+        List<StatsDto> stats;
         if (unique) {
-            stats = stats.stream()
-                    .map(stat -> {
-                        long uniqueHits = statsRepository.countDistinctByAppAndUriAndTimestampBetween(stat.getApp(),
-                                stat.getUri(), startTime, endTime);
-                        return new StatsDto(stat.getApp(), stat.getUri(), uniqueHits);
-                    })
-                    .collect(Collectors.toList());
+            stats = statsRepository.findStatsWithUniqueIp(startTime, endTime, uris);
+            stats.forEach(stat -> log.info("Уникальные IP для app={}, uri={}: {}",
+                    stat.getApp(), stat.getUri(), stat.getHits()));
+        } else {
+            stats = statsRepository.findStats(startTime, endTime, uris);
+            stats.forEach(stat -> log.info("Все просмотры для app={}, uri={}: {}",
+                    stat.getApp(), stat.getUri(), stat.getHits()));
         }
-
         return logAndReturn(stats, result -> log.info("Статистика собрана в количестве - {}",
                 result.size()));
     }
