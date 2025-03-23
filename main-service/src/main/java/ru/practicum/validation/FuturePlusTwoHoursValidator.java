@@ -17,7 +17,7 @@ public class FuturePlusTwoHoursValidator implements ConstraintValidator<FuturePl
         }
         try {
             LocalDateTime eventDateTime = LocalDateTime.parse(eventDate, FORMATTER);
-            LocalDateTime minAllowedDateTime = LocalDateTime.now().plusHours(2);
+            LocalDateTime minAllowedDateTime = LocalDateTime.now().plusHours(2).plusSeconds(1);
             return eventDateTime.isAfter(minAllowedDateTime);
         } catch (Exception e) {
             return false;
