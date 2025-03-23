@@ -29,4 +29,5 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
                                                      @Param("uri") String uri,
                                                      @Param("startTime") LocalDateTime startTime,
                                                      @Param("endTime") LocalDateTime endTime);
+
 }
