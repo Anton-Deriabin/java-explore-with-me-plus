@@ -43,13 +43,13 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     public CompilationDto updateCompilation(UpdateCompilationRequest updateCompilationRequest,Long compId) {
         Compilation compilation = checkCompilationService.checkCompilation(compId);
 
-        if (updateCompilationRequest.getTitle()!=null) {
+        if (updateCompilationRequest.getTitle() != null) {
             compilation.setTitle(updateCompilationRequest.getTitle());
         }
-        if (updateCompilationRequest.getPinned()!=null) {
+        if (updateCompilationRequest.getPinned() != null) {
             compilation.setPinned(updateCompilationRequest.getPinned());
         }
-        if (updateCompilationRequest.getEvents()!=null && !updateCompilationRequest.getEvents().isEmpty()) {
+        if (updateCompilationRequest.getEvents() != null && !updateCompilationRequest.getEvents().isEmpty()) {
             compilation.setEvents(updateCompilationRequest.getEvents().stream()
                     .map(checkEventService::checkEvent).collect(Collectors.toSet()));
         }
@@ -62,6 +62,5 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     public void deleteCompilation(Long compId) {
         Compilation compilation = checkCompilationService.checkCompilation(compId);
         compilationRepository.delete(compilation);
-
     }
 }
