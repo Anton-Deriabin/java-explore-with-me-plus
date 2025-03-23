@@ -9,9 +9,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "locations", schema = "public")
+@EqualsAndHashCode(of = { "lat", "lon" })
 @Getter
 @Setter
 @ToString
+@Builder
 public class Location {
 
     @Id
