@@ -9,4 +9,6 @@ public interface CompilationAdminService {
     CompilationDto createCompilation(NewCompilationDto newCompilationDto);
 
     CompilationDto updateCompilation(UpdateCompilationRequest updateCompilationRequest,Long compId);
+
+    void deleteCompilation(Long compId);
 }

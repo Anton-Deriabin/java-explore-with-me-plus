@@ -55,4 +55,13 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         }
         return compilationMapper.toDto(compilationRepository.save(compilation));
     }
+
+
+    @Override
+    @Transactional
+    public void deleteCompilation(Long compId) {
+        Compilation compilation = checkCompilationService.checkCompilation(compId);
+        compilationRepository.delete(compilation);
+
+    }
 }

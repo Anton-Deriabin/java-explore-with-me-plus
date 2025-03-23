@@ -34,4 +34,10 @@ public class CompilationAdminController {
                                             @PathVariable Long compId) {
         return compilationAdminService.updateCompilation(updateCompilationRequest,compId);
     }
+
+    @DeleteMapping("/{compId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCompilation(@PathVariable Long compId) {
+        compilationAdminService.deleteCompilation(compId);
+    }
 }
