@@ -11,7 +11,6 @@ import ru.practicum.exception.ValidationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.practicum.utils.LoggingUtils.logAndReturn;
 
