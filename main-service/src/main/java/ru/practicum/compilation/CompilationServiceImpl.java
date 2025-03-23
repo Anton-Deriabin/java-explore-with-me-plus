@@ -32,10 +32,13 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public List<CompilationDto> findCompilationsByPinned(Boolean pinned, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size);
-        return compilationRepository.findByPinned(pinned, pageable)
-                .stream()
-                .map(compilationMapper::toDto)
-                .collect(Collectors.toList());
+        return logAndReturn(compilationRepository.findByPinned(pinned, pageable)
+                        .stream()
+                        .map(compilationMapper::toDto)
+                        .collect(Collectors.toList()),
+                comp -> log.info("Found {} compilations",
+                        comp.size())
+        );
     }
 
     @Override
