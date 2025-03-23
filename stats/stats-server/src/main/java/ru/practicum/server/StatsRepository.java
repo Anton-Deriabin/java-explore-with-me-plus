@@ -20,7 +20,7 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
                              @Param("endTime") LocalDateTime endTime,
                              @Param("uris") List<String> uris);
 
-    @Query("SELECT new ru.practicum.StatsDto(e.app, e.uri, COUNT(DISTINCT e.ip)) " +
+    @Query("SELECT new ru.practicum.StatsDto(e.app, e.uri, COUNT(DISTINCT e.app)) " +
             "FROM EndpointHit e " +
             "WHERE e.timestamp BETWEEN :startTime AND :endTime " +
             "AND (:uris IS NULL OR e.uri IN :uris) " +
