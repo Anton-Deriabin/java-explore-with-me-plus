@@ -13,7 +13,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/statsDb
       - SPRING_DATASOURCE_USERNAME=dbuser
       - SPRING_DATASOURCE_PASSWORD=12345
-      - TZ=Europe/Moscow
+      - JAVA_TOOL_OPTIONS=-Duser.timezone=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -55,7 +55,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/mainDb
       - SPRING_DATASOURCE_USERNAME=dbuser
       - SPRING_DATASOURCE_PASSWORD=12345
-      - TZ=Europe/Moscow
+      - JAVA_TOOL_OPTIONS=-Duser.timezone=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
