@@ -56,15 +56,6 @@ public class ErrorHandler {
                 })
                 .toList();
         String firstErrorMessage = errorMessages.get(0);
-//        if (firstErrorMessage.contains("eventDate") &&
-//                firstErrorMessage.contains("должно содержать дату, которая еще не наступила.")) {
-//            ErrorResponse response = new ErrorResponse(
-//                    "FORBIDDEN",
-//                    "For the requested operation the conditions are not met.",
-//                    firstErrorMessage
-//            );
-//            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-//        }
         ErrorResponse response = new ErrorResponse(
                 "BAD_REQUEST",
                 "Incorrectly made request.",

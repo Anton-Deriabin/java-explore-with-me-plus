@@ -1,6 +1,8 @@
 package ru.practicum.request;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.request.dto.ParticipationRequestDto;
@@ -10,9 +12,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userId}/requests")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RequestController {
-    private final String cancelPath = "/{requestId}/cancel";
-    private final RequestService requestService;
+    final String cancelPath = "/{requestId}/cancel";
+    final RequestService requestService;
 
     @GetMapping()
     public List<ParticipationRequestDto> findRequestsByUserId(@PathVariable Long userId) {

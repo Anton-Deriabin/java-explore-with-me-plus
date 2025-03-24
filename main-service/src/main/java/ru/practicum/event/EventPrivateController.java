@@ -3,7 +3,9 @@ package ru.practicum.event;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.*;
@@ -16,10 +18,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventPrivateController {
-    private final String eventIdPath = "/{eventId}";
-    private final String requestsPath = "/requests";
-    private final EventService eventService;
+    final String eventIdPath = "/{eventId}";
+    final String requestsPath = "/requests";
+    final EventService eventService;
 
     @GetMapping()
     public List<EventShortDto> findEventsByInitiatorId(@PathVariable Long userId,
