@@ -14,13 +14,14 @@ import ru.practicum.comment.dto.CommentDto;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentController {
-    final String userIdHeader = "X-Sharer-User-Id";
+    final String eventIdHeader = "X-Sharer-Event-Id";
     final CommentService commentService;
 
     @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
     public CommentDto createComment(@RequestBody CommentCreateDto comment,
-                                    @RequestHeader(value = userIdHeader, required = false) Long userId,
-                                    @PathVariable Long eventId) {
+                                    @PathVariable Long userId,
+                                    @RequestHeader(value = eventIdHeader) Long eventId) {
         return commentService.createComment(comment, userId, eventId);
     }
 
