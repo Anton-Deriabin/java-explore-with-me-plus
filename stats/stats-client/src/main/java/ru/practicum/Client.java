@@ -2,11 +2,10 @@ package ru.practicum;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -15,14 +14,14 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Client {
     RestClient restClient;
 
     String url;
 
-    public Client(@Value("${my.url}") String url) {
+    public Client(String url) {
         this.restClient = RestClient.create();
         this.url = url;
     }

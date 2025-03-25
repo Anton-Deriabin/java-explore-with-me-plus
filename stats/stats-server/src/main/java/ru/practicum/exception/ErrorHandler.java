@@ -12,4 +12,10 @@ public class ErrorHandler {
     public ErrorResponse handleNotFound(final InternalServerException e) {
         return new ErrorResponse("Непредвиденная ошибка сервера", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotFound(final ValidationException e) {
+        return new ErrorResponse("Некорректный запрос", e.getMessage());
+    }
 }
