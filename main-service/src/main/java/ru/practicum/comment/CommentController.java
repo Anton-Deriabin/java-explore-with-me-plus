@@ -19,7 +19,7 @@ public class CommentController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto createComment(@RequestBody CommentCreateDto comment,
+    public CommentDto createComment(@Valid @RequestBody CommentCreateDto comment,
                                     @PathVariable Long userId,
                                     @RequestHeader(value = eventIdHeader) Long eventId) {
         return commentService.createComment(comment, userId, eventId);
