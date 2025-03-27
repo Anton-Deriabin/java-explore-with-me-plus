@@ -15,10 +15,10 @@ import java.util.List;
 public class CommentPublicController {
     CommentService commentService;
 
-    @GetMapping("/{eventId}")
+    @GetMapping()
     public List<CommentDto> findCommentsByEventId(@RequestParam(defaultValue = "0") Integer from,
                                                   @RequestParam(defaultValue = "10") Integer size,
-                                                  @PathVariable Long eventId) {
+                                                  @RequestHeader Long eventId) {
         return commentService.findCommentsByEventId(eventId, from, size);
     }
 
