@@ -4,10 +4,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.comment.dto.CommentCreateDto;
 import ru.practicum.comment.dto.CommentDto;
-
-import java.util.List;
+import ru.practicum.comment.dto.CommentUpdateDto;
 
 @RestController
 @AllArgsConstructor
@@ -16,19 +14,9 @@ public class CommentAdminController {
     private final CommentService commentService;
 
     @PatchMapping("/{commentId}")
-    public CommentDto updateComment(@Valid @RequestBody CommentCreateDto newCommentDto,
+    public CommentDto updateComment(@Valid @RequestBody CommentUpdateDto updateCommentDto,
                                     @PathVariable Long commentId) {
-        return commentService.updateCommentByAdmin(newCommentDto, commentId);
-    }
-
-    @GetMapping("/{eventId}")
-    public List<CommentDto> findCommentsByEventId(@RequestParam Long eventId) {
-        return commentService.findCommentsByEventId(eventId);
-    }
-
-    @GetMapping("/{commentId}")
-    public CommentDto getCommentById(@PathVariable Long commentId) {
-        return commentService.getCommentByAdmin(commentId);
+        return commentService.updateCommentByAdmin(updateCommentDto, commentId);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

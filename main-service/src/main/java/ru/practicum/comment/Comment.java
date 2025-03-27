@@ -38,4 +38,10 @@ public class Comment {
 
     @Column(nullable = false)
     LocalDateTime created;
+
+    @Column(nullable = false)
+    LocalDateTime updated;
+
+    @Column(name = "updated_by", nullable = false)
+    String updatedBy;
 }

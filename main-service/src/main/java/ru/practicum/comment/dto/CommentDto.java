@@ -19,5 +19,6 @@ public class CommentDto {
     Long event;
     Long author;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime created;
+    LocalDateTime timestamp;
+    Boolean updated;
 }

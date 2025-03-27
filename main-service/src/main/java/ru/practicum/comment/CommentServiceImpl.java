@@ -4,12 +4,16 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.comment.dto.CommentCreateDto;
 import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.dto.CommentUpdateDto;
 import ru.practicum.exception.ForbiddenException;
-import ru.practicum.exception.NotFoundException;
+import ru.practicum.utils.CheckCommentService;
 import ru.practicum.utils.CheckEventService;
 import ru.practicum.utils.CheckUserService;
 
@@ -28,14 +32,26 @@ public class CommentServiceImpl implements CommentService {
     CommentRepository commentRepository;
     CheckEventService checkEventService;
     CommentMapper commentMapper;
+    CheckCommentService checkCommentService;
 
     @Override
-    public List<CommentDto> findCommentsByEventId(Long eventId) {
-        return logAndReturn(commentRepository.findCommentsByEventId(eventId).stream()
+    public List<CommentDto> findCommentsByEventId(Long eventId, Integer from, Integer size) {
+        Pageable pageRequest = PageRequest.of(from / size, size);
+        Page<Comment> commentPage = commentRepository.findByEventId(eventId, pageRequest);
+        return logAndReturn(commentPage.getContent()
+                        .stream()
                         .map(commentMapper::toDto)
                         .toList(),
-                comments -> log.info("Found {} comments for event with id={}",
+                comments -> log.info("Found {} comments for event with id= {}",
                         comments.size(), eventId)
+        );
+    }
+
+    @Override
+    public CommentDto getComment(Long commentId) {
+        return logAndReturn(
+                commentMapper.toDto(checkCommentService.checkComment(commentId)),
+                comment -> log.info("Retrieved comment with id={} (admin view)", commentId)
         );
     }
 
@@ -45,6 +61,8 @@ public class CommentServiceImpl implements CommentService {
         return logAndReturn(commentMapper.toDto(commentRepository.save(Comment.builder()
                         .text(commentCreateDto.getText())
                         .created(commentCreateDto.getCreated())
+                        .updated(commentCreateDto.getUpdated())
+                        .updatedBy(commentCreateDto.getUpdatedBy())
                         .author(checkUserService.checkUser(userId))
                         .event(checkEventService.checkEvent(eventId))
                         .build())),
@@ -53,14 +71,13 @@ public class CommentServiceImpl implements CommentService {
         );
     }
 
-    @Transactional
     @Override
-    public CommentDto updateCommentByAdmin(CommentCreateDto updateDto, Long commentId) {
-        Comment comment = getCommentOrThrow(commentId);
-
+    @Transactional
+    public CommentDto updateCommentByAdmin(CommentUpdateDto updateDto, Long commentId) {
+        Comment comment = checkCommentService.checkComment(commentId);
         comment.setText(updateDto.getText());
-        comment.setCreated(LocalDateTime.now());
-
+        comment.setUpdated(LocalDateTime.now());
+        comment.setUpdatedBy(UpdatedBy.ADMIN.toString());
         return logAndReturn(
                 commentMapper.toDto(commentRepository.save(comment)),
                 updatedComment -> log.info("Comment with id={} updated by admin", commentId)
@@ -68,65 +85,45 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto getCommentByAdmin(Long commentId) {
-        return logAndReturn(
-                commentMapper.toDto(getCommentOrThrow(commentId)),
-                comment -> log.info("Retrieved comment with id={} (admin view)", commentId)
-        );
-    }
-
     @Transactional
-    @Override
     public void deleteCommentByAdmin(Long commentId) {
-        Comment comment = getCommentOrThrow(commentId);
+        Comment comment = checkCommentService.checkComment(commentId);
         commentRepository.delete(comment);
         log.info("Comment with id={} deleted by admin", commentId);
     }
 
-    @Transactional
     @Override
-    public CommentDto updateCommentByUser(Long commentId, Long userId, CommentCreateDto updateDto) {
-        Comment comment = getCommentOrThrow(commentId);
+    @Transactional
+    public CommentDto updateCommentByUser(Long commentId, Long userId, CommentUpdateDto updateDto) {
+        Comment comment = checkCommentService.checkComment(commentId);
         checkUserIsAuthor(comment, userId);
-
+        checkUpdatedByAdmin(comment);
         comment.setText(updateDto.getText());
-        comment.setCreated(LocalDateTime.now());
-
+        comment.setUpdated(updateDto.getUpdated());
         return logAndReturn(
                 commentMapper.toDto(commentRepository.save(comment)),
                 updatedComment -> log.info("Comment {} updated by user {}", commentId, userId)
         );
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteCommentByUser(Long commentId, Long userId) {
-        Comment comment = getCommentOrThrow(commentId);
+        Comment comment = checkCommentService.checkComment(commentId);
         checkUserIsAuthor(comment, userId);
-
         commentRepository.delete(comment);
         log.info("Comment {} deleted by user {}", commentId, userId);
-    }
-
-    @Override
-    public CommentDto getCommentByUser(Long commentId, Long userId) {
-        Comment comment = getCommentOrThrow(commentId);
-        checkUserIsAuthor(comment, userId);
-
-        return logAndReturn(
-                commentMapper.toDto(comment),
-                c -> log.info("User {} accessed comment {}", userId, commentId)
-        );
-    }
-
-    private Comment getCommentOrThrow(Long commentId) {
-        return commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException("Comment with id=" + commentId + " not found"));
     }
 
     private void checkUserIsAuthor(Comment comment, Long userId) {
         if (!comment.getAuthor().getId().equals(userId)) {
             throw new ForbiddenException("User " + userId + " is not author of comment " + comment.getId());
+        }
+    }
+
+    private void checkUpdatedByAdmin(Comment comment) {
+        if (comment.getUpdatedBy() != null && comment.getUpdatedBy().equals(UpdatedBy.ADMIN.toString())) {
+            throw new ForbiddenException("You are not allowed to update this comment");
         }
     }
 }
