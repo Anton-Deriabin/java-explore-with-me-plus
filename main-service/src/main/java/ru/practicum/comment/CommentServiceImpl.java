@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.comment.dto.CommentCreateDto;
 import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.dto.CommentUpdateDto;
+import ru.practicum.event.Event;
 import ru.practicum.exception.ForbiddenException;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.utils.CheckCommentService;
 import ru.practicum.utils.CheckEventService;
 import ru.practicum.utils.CheckUserService;
@@ -48,10 +50,15 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto getComment(Long commentId) {
+    public CommentDto getComment(Long commentId,Long eventId) {
+        Comment comment = checkCommentService.checkComment(commentId);
+        Event event = checkEventService.checkEvent(eventId);
+        if (!comment.getEvent().getId().equals(event.getId())) {
+            throw new ValidationException("Некорректный запрос");
+        }
         return logAndReturn(
-                commentMapper.toDto(checkCommentService.checkComment(commentId)),
-                comment -> log.info("Retrieved comment with id={} (admin view)", commentId)
+                commentMapper.toDto(comment),
+                com -> log.info("Retrieved comment with id={} (admin view)", commentId)
         );
     }
 
@@ -94,8 +101,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentDto updateCommentByUser(Long commentId, Long userId, CommentUpdateDto updateDto) {
+    public CommentDto updateCommentByUser(Long commentId, Long userId, Long eventId,CommentUpdateDto updateDto) {
         Comment comment = checkCommentService.checkComment(commentId);
+        Event event = checkEventService.checkEvent(eventId);
+        if (!comment.getEvent().getId().equals(event.getId())) {
+            throw new ValidationException("Некорректный запрос");
+        }
         checkUserIsAuthor(comment, userId);
         checkUpdatedByAdmin(comment);
         comment.setText(updateDto.getText());
@@ -108,9 +119,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void deleteCommentByUser(Long commentId, Long userId) {
+    public void deleteCommentByUser(Long commentId, Long userId,Long eventId) {
         Comment comment = checkCommentService.checkComment(commentId);
         checkUserIsAuthor(comment, userId);
+        Event event = checkEventService.checkEvent(eventId);
+        if (!comment.getEvent().getId().equals(event.getId())) {
+            throw new ValidationException("Некорректный запрос");
+        }
         commentRepository.delete(comment);
         log.info("Comment {} deleted by user {}", commentId, userId);
     }

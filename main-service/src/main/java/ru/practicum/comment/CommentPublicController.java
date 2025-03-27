@@ -9,22 +9,22 @@ import ru.practicum.comment.dto.CommentDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("events/{eventId}/comments")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentPublicController {
-    final String eventIdHeader = "X-Sharer-Event-Id";
     CommentService commentService;
 
     @GetMapping()
     public List<CommentDto> findCommentsByEventId(@RequestParam(defaultValue = "0") Integer from,
                                                   @RequestParam(defaultValue = "10") Integer size,
-                                                  @RequestHeader(value = eventIdHeader) Long eventId) {
+                                                  @PathVariable Long eventId) {
         return commentService.findCommentsByEventId(eventId, from, size);
     }
 
     @GetMapping("/{commentId}")
-    public CommentDto getComment(@PathVariable Long commentId) {
-        return commentService.getComment(commentId);
+    public CommentDto getComment(@PathVariable Long commentId,
+                                 @PathVariable Long eventId) {
+        return commentService.getComment(commentId,eventId);
     }
 }
