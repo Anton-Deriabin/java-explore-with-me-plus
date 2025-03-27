@@ -13,12 +13,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentPublicController {
+    final String eventIdHeader = "X-Sharer-Event-Id";
     CommentService commentService;
 
     @GetMapping()
     public List<CommentDto> findCommentsByEventId(@RequestParam(defaultValue = "0") Integer from,
                                                   @RequestParam(defaultValue = "10") Integer size,
-                                                  @RequestHeader Long eventId) {
+                                                  @RequestHeader(value = eventIdHeader) Long eventId) {
         return commentService.findCommentsByEventId(eventId, from, size);
     }
 
