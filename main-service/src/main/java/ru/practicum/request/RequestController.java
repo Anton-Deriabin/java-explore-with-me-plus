@@ -17,7 +17,7 @@ public class RequestController {
     final String cancelPath = "/{requestId}/cancel";
     final RequestService requestService;
 
-    @GetMapping()
+    @GetMapping
     public List<ParticipationRequestDto> findRequestsByUserId(@PathVariable Long userId) {
         return requestService.findRequestsByUserId(userId);
     }

@@ -124,7 +124,8 @@ public class CommentServiceImpl implements CommentService {
         checkUserIsAuthor(comment, userId);
         Event event = checkEventService.checkEvent(eventId);
         if (!comment.getEvent().getId().equals(event.getId())) {
-            throw new ValidationException("Некорректный запрос");
+            throw new ValidationException(String.format("User with id=%d isnt an author of comment with id=%d",
+                    userId, commentId));
         }
         commentRepository.delete(comment);
         log.info("Comment {} deleted by user {}", commentId, userId);

@@ -68,7 +68,8 @@ public class EventPublicServiceImpl implements EventPublicService {
         LocalDateTime start = rangeStart != null ? LocalDateTime.parse(rangeStart, formatter) : minTime;
         LocalDateTime end = rangeEnd != null ? LocalDateTime.parse(rangeEnd, formatter) : maxTime;
         text = text != null ? text : "";
-        Page<Event> events = eventRepository.findEvents(text, paid, start, end, categories, onlyAvailable, State.PUBLISHED, pageable);
+        Page<Event> events = eventRepository.findEvents(text, paid, start, end, categories, onlyAvailable,
+                State.PUBLISHED, pageable);
         List<EventShortDto> dtos = events.map(eventMapper::toShortDto).toList();
 
         if (sort != null) {

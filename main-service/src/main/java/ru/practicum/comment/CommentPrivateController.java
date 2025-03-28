@@ -18,7 +18,7 @@ public class CommentPrivateController {
     final String userIdHeader = "X-Sharer-User-Id";
     final CommentService commentService;
 
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto createComment(@Valid @RequestBody CommentCreateDto comment,
                                     @RequestHeader(value = userIdHeader) Long userId,
