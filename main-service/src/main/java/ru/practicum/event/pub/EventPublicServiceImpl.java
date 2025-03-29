@@ -25,6 +25,7 @@ import ru.practicum.utils.CheckEventService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -64,15 +65,13 @@ public class EventPublicServiceImpl implements EventPublicService {
                                          String sort, Integer from, Integer size, HttpServletRequest request) {
         Pageable pageable = PageRequest.of(from / size, size);
 
-        LocalDateTime start = rangeStart != null ? LocalDateTime.parse(rangeStart, formatter) :
-                minTime;
-        LocalDateTime end = rangeEnd != null ? LocalDateTime.parse(rangeEnd, formatter) :
-                maxTime;
+        LocalDateTime start = rangeStart != null ? LocalDateTime.parse(rangeStart, formatter) : minTime;
+        LocalDateTime end = rangeEnd != null ? LocalDateTime.parse(rangeEnd, formatter) : maxTime;
         text = text != null ? text : "";
-        Page<Event> events = eventRepository.findEvents(text, paid, start,
-                end, categories, onlyAvailable, State.PUBLISHED, pageable);
-        List<EventShortDto> dtos = events.map(eventMapper::toShortDto)
-                .toList();
+        Page<Event> events = eventRepository.findEvents(text, paid, start, end, categories, onlyAvailable,
+                State.PUBLISHED, pageable);
+        List<EventShortDto> dtos = events.map(eventMapper::toShortDto).toList();
+
         if (sort != null) {
             dtos = events.stream()
                     .sorted((event1, event2) -> {
@@ -89,8 +88,25 @@ public class EventPublicServiceImpl implements EventPublicService {
                     .map(eventMapper::toShortDto)
                     .toList();
         }
+
         hitStats(request);
-        dtos.forEach((dto) -> dto.setViews(getStats(request).getFirst().getHits()));
+
+        // Получаем список URI для всех событий
+        List<String> uris = dtos.stream()
+                .map(dto -> request.getRequestURI() + "/" + dto.getId())
+                .collect(Collectors.toList());
+
+        // Получаем статистику просмотров для всех URI
+        List<StatsDto> stats = client.getStats(minTime.format(formatter), maxTime.format(formatter), uris, true);
+
+        // Устанавливаем количество просмотров для каждого события
+        for (EventShortDto dto : dtos) {
+            stats.stream()
+                    .filter(stat -> stat.getUri().equals(request.getRequestURI() + "/" + dto.getId()))
+                    .findFirst()
+                    .ifPresent(stat -> dto.setViews(stat.getHits()));
+        }
+
         if (dtos.isEmpty()) {
             throw new ValidationException("Нет подходящих событий");
         } else {

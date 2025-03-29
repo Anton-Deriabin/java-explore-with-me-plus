@@ -24,7 +24,7 @@ public class EventPrivateController {
     final String requestsPath = "/requests";
     final EventService eventService;
 
-    @GetMapping()
+    @GetMapping
     public List<EventShortDto> findEventsByInitiatorId(@PathVariable Long userId,
                                                        @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                        @Positive @RequestParam(defaultValue = "10") Integer size) {
